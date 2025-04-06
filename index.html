@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Monitoring ESP32</title>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    h2 {
+      color: #2c3e50;
+    }
+    .sensor {
+      margin: 10px;
+      font-size: 1.2em;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 1em;
+      border: none;
+      border-radius: 5px;
+      background-color: #3498db;
+      color: white;
+      cursor: pointer;
+      margin: 10px;
+    }
+    button.off {
+      background-color: #e74c3c;
+    }
+  </style>
+</head>
+<body>
+  <h2>Monitoring & Kontrol ESP32</h2>
+  <div class="sensor">Tegangan: <span id="voltage">0</span> V</div>
+  <div class="sensor">Arus: <span id="current">0</span> A</div>
+  <div class="sensor">Suhu: <span id="temperature">0</span> °C</div>
+  <div class="sensor">RPM: <span id="rpm">0</span></div>
+
+  <h3>Kendali ON / OFF</h3>
+  <button onclick="setRelay('ON')">ON</button>
+  <button class="off" onclick="setRelay('OFF')">OFF</button>
+
+  <script>
+    // Konfigurasi Firebase
+    const firebaseConfig = {
+  apiKey: "AIzaSyAAx0-cBL_IdHHCSVJDWi_cIPaIME6wT_0",
+  authDomain: "monitoring-projectskripsi.firebaseapp.com",
+  databaseURL: "https://monitoring-projectskripsi-default-rtdb.firebaseio.com",
+  projectId: "monitoring-projectskripsi",
+  storageBucket: "monitoring-projectskripsi.firebasestorage.app",
+  messagingSenderId: "118639080180",
+  appId: "1:118639080180:web:cb34c79450478e04f364a1"
+};
+
+    // Inisialisasi
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // Fungsi update data real-time
+    function updateData(path, elementId) {
+      db.ref(path).on("value", (snapshot) => {
+        document.getElementById(elementId).innerText = snapshot.val();
+      });
+    }
+
+    // Update sensor
+    updateData("sensor/voltage", "voltage");
+    updateData("sensor/current", "current");
+    updateData("sensor/temperature", "temperature");
+    updateData("sensor/rpm", "rpm");
+
+    // Fungsi kontrol ON/OFF
+    function setRelay(state) {
+      db.ref("control/relay").set(state);
+    }
+  </script>
+</body>
+</html>
